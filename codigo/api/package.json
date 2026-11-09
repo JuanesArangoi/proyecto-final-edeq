@@ -1,0 +1,8 @@
+{
+  "name": "edeq-api",
+  "version": "1.0.0",
+  "description": "API academica de reporte de fallas (proyecto final, no es un sistema real de EDEQ)",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2", "pg": "^8.12.0" }
+}

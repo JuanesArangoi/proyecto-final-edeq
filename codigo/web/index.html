@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal de reporte de fallas - proyecto academico</title>
+<style>
+  :root{--azul:#0b4f8a;--gris:#f3f5f8;--texto:#1d2733}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;color:var(--texto);background:var(--gris)}
+  header{background:var(--azul);color:#fff;padding:20px 24px}
+  header h1{margin:0;font-size:1.4rem}
+  header p{margin:4px 0 0;opacity:.85;font-size:.9rem}
+  main{max-width:860px;margin:24px auto;padding:0 16px;display:grid;gap:20px}
+  section{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  h2{margin-top:0;font-size:1.1rem}
+  label{display:block;margin:10px 0 4px;font-size:.9rem}
+  input,select,textarea,button{width:100%;padding:9px;font:inherit;border:1px solid #c5ccd6;border-radius:6px}
+  button{background:var(--azul);color:#fff;border:0;margin-top:14px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #e3e7ee}
+  .ok{color:#14763a}.err{color:#b3261e}
+  footer{text-align:center;font-size:.8rem;color:#5b6773;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Reporte de fallas del servicio de energia</h1>
+  <p>Proyecto academico - Universidad del Quindio. Sitio simulado, no es un canal oficial de EDEQ.</p>
+</header>
+<main>
+  <section>
+    <h2>Estado del sistema</h2>
+    <p id="estado">Consultando...</p>
+  </section>
+  <section>
+    <h2>Nuevo reporte</h2>
+    <form id="form">
+      <label for="municipio">Municipio</label>
+      <select id="municipio" required>
+        <option>Armenia</option><option>Buenavista</option><option>Calarca</option>
+        <option>Circasia</option><option>Cordoba</option><option>Filandia</option>
+        <option>Genova</option><option>La Tebaida</option><option>Montenegro</option>
+        <option>Pijao</option><option>Quimbaya</option><option>Salento</option>
+      </select>
+      <label for="direccion">Direccion o referencia</label>
+      <input id="direccion" required maxlength="120">
+      <label for="descripcion">Que esta pasando</label>
+      <textarea id="descripcion" rows="3" required maxlength="300"></textarea>
+      <button type="submit">Enviar reporte</button>
+    </form>
+    <p id="msg"></p>
+  </section>
+  <section>
+    <h2>Ultimos reportes</h2>
+    <table>
+      <thead><tr><th>#</th><th>Municipio</th><th>Direccion</th><th>Estado</th><th>Fecha</th></tr></thead>
+      <tbody id="lista"></tbody>
+    </table>
+  </section>
+</main>
+<footer>edeq-srv - Dokploy - Nginx + Node.js + PostgreSQL</footer>
+<script>
+const $ = id => document.getElementById(id);
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+async function estado(){
+  try{
+    const r = await fetch('/api/health'); const j = await r.json();
+    $('estado').innerHTML = r.ok
+      ? '<span class="ok">API y base de datos en linea</span> (hora del servidor: ' + new Date(j.hora).toLocaleString('es-CO') + ')'
+      : '<span class="err">La API responde pero la base de datos falla</span>';
+  }catch(e){ $('estado').innerHTML = '<span class="err">No se pudo contactar la API</span>'; }
+}
+async function lista(){
+  try{
+    const r = await fetch('/api/reportes'); const filas = await r.json();
+    $('lista').innerHTML = filas.map(f => '<tr><td>'+f.id+'</td><td>'+esc(f.municipio)+'</td><td>'+esc(f.direccion)+'</td><td>'+esc(f.estado)+'</td><td>'+new Date(f.creado).toLocaleString('es-CO')+'</td></tr>').join('');
+  }catch(e){}
+}
+$('form').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const r = await fetch('/api/reportes', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({municipio:$('municipio').value, direccion:$('direccion').value, descripcion:$('descripcion').value})});
+  $('msg').textContent = r.ok ? 'Reporte registrado.' : 'No se pudo registrar el reporte.';
+  if(r.ok){ $('form').reset(); lista(); }
+});
+estado(); lista();
+</script>
+</body>
+</html>

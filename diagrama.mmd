@@ -1,0 +1,48 @@
+graph LR
+    subgraph RED["Red local EDEQ - 192.168.100.0/24"]
+        direction LR
+        CW["Clientes Windows/Mac<br/>(área comercial y administrativa)"]
+        CL["Cliente Linux edeq-cli<br/>192.168.100.20<br/>(técnicos y operación)"]
+    end
+
+    A["Red local EDEQ"] --> FW["Firewall UFW<br/>servidor 192.168.100.10"]
+
+    subgraph DK["Dokploy (Docker Swarm) - 192.168.100.10"]
+        B["Traefik<br/>proxy inverso<br/>80/443"]
+        C["Web Server<br/>sitio institucional<br/>(Nginx)"]
+        D["Backend API<br/>reporte de fallas y PQR<br/>(Node.js)"]
+        E["Panel Admin<br/>Dokploy :3000"]
+        DB[("PostgreSQL<br/>puerto 5432<br/>solo red interna")]
+    end
+
+    subgraph LX["Servicios Linux tradicionales - 192.168.100.10"]
+        F["Servidor Linux<br/>Ubuntu Server 24.04"]
+        G["NTP<br/>UDP 123"]
+        H["NFS<br/>2049"]
+        I["NIS<br/>111 + RPC"]
+        J["CUPS<br/>631"]
+        K["Samba<br/>445"]
+    end
+
+    FW --> B
+    FW --> F
+    B --> C
+    B --> D
+    B --> E
+    D --> DB
+
+    F --> G
+    F --> H
+    F --> I
+    F --> J
+    F --> K
+
+    H --> L["Clientes NFS<br/>(Linux)"]
+    K --> M["Clientes Windows/Mac"]
+    I --> N["Autenticación<br/>de usuarios"]
+    G -.->|hora| CL
+    G -.->|hora| CW
+    J -.->|impresión IPP| CW
+    L --- CL
+    N --- CL
+    M --- CW
