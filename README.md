@@ -5,6 +5,5 @@ Proyecto académico (Universidad del Quindío, Administración de Infraestructur
 - `analisis.md` — análisis, justificación, tabla de requisitos y diagrama
 - `diagrama.mmd` — diagrama de arquitectura (Mermaid)
 - `documentacion.md` — instalación, verificación, problemas y soluciones
-- `presentacion.md` — guion de la presentación de 15 minutos
 - `capturas/` — evidencias
 - `codigo/` — `web/` (Nginx), `api/` (Node.js + PostgreSQL), `scripts/` (backup y monitoreo)
