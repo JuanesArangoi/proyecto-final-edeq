@@ -1,10 +1,10 @@
 # Documentación — Infraestructura de TI para EDEQ
 
 Universidad del Quindío — Administración de Infraestructura de TI.
-Integrantes: Juanes Arango `[COMPLETAR: demás integrantes]`.
+Integrantes: Juan Esteban Arango, Karen Reyes, Shara Bedoya
 Repositorio: https://github.com/JuanesArangoi/proyecto-final-edeq
 
-> Proyecto académico. El sitio web y los datos son simulados y no representan sistemas reales de EDEQ.
+> Proyecto académico.
 
 ## 1. Entorno
 
@@ -327,9 +327,9 @@ El proyecto vive en un repositorio Git con la estructura pedida (`analisis.md`, 
 Costos de licencias:
 
 - Todo el software usado es de código abierto (Ubuntu Server, Dokploy, Docker, Traefik, Nginx, Node.js, PostgreSQL, NTPsec, NFS, NIS, CUPS, Samba): costo de licencias de software **cero**.
-- Una alternativa basada en Windows Server obligaría a pagar licencia del servidor y licencias de acceso de cliente (CAL) por usuario o dispositivo, y servicios equivalentes (directorio, archivos, impresión) se licencian aparte. `[COMPLETAR: cotización actual si se quiere presentar cifras]`.
+- Una alternativa basada en Windows Server obligaría a pagar licencia del servidor y licencias de acceso de cliente (CAL) por usuario o dispositivo, y servicios equivalentes (directorio, archivos, impresión) se licencian aparte. 
 
-Costos de operación: hardware de un servidor físico o virtual `[COMPLETAR: estimación del equipo]`, energía, y el tiempo de un administrador. La administración es por línea de comandos, lo que exige personal con experiencia en Linux.
+Costos de operación: hardware de un servidor físico o virtual, energía, y el tiempo de un administrador. La administración es por línea de comandos, lo que exige personal con experiencia en Linux.
 
 Beneficios: centralización de web, archivos, impresión, hora y usuarios en una sola plataforma; despliegues repetibles con Dokploy; copia de seguridad y monitoreo automáticos; facilidad para crecer (se pueden añadir aplicaciones sin tocar el sistema base).
 
@@ -339,7 +339,3 @@ Riesgos y mitigaciones:
 - NIS no cifra el tráfico: se restringe a la red local con UFW y `ypserv.securenets`; en producción se recomendaría LDAP con TLS o Kerberos.
 - Certificado autofirmado: en producción, dominio público y Let's Encrypt.
 
-## 13. Pendientes antes de entregar
-
-- Completar los campos `[COMPLETAR]`.
-- Revisar que ninguna captura muestre tokens, claves privadas ni contraseñas reales.
