@@ -291,7 +291,6 @@ Se comprobó después que web, API, NIS, NFS, NTP y Samba siguen funcionando. Li
 `codigo/scripts/backup_edeq.sh` hace `pg_dump` de la base `edeq` a `/srv/backups/edeq/`, comprime y conserva 7 días. Cron diario a las 2:00 a. m. (`/etc/cron.d/edeq-backup`). Prueba de restauración: la copia se cargó en una base temporal `edeq_restore` y devolvió el mismo número de reportes (2).
 ![configuracion-de-alertas-y-backups](capturas/configuracion-de-alertas-y-backups.png)
 
-![restauracion-backup](capturas/restauracion-backup.png)
 
 ### 10.3 Monitoreo con alertas
 
@@ -342,6 +341,5 @@ Riesgos y mitigaciones:
 
 ## 13. Pendientes antes de entregar
 
-- Tomar tres capturas que aún faltan y guardarlas en `capturas/`: `ufw-status.png` (salida de `sudo ufw status numbered`), `samba-windows.png` (`dir Z:\` o el Explorador en `\\172.28.223.201\empresa`) y `restauracion-backup.png` (restauración de la copia con `count = 2`).
 - Completar los campos `[COMPLETAR]`.
 - Revisar que ninguna captura muestre tokens, claves privadas ni contraseñas reales.
