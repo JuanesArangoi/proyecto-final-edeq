@@ -17,6 +17,8 @@ Repositorio: https://github.com/JuanesArangoi/proyecto-final-edeq
 | Subred | 172.28.208.0/20 (DHCP del switch de Hyper-V) |
 | Dominio local | `edeq.local` → `panel.`, `www.`, `api.` (archivo hosts de Windows) |
 
+![Creacion-VM-cliente](capturas/Creacion-VM-cliente.png)
+
 Desviaciones frente a la guía, con su razón:
 
 - **Hipervisor:** la guía menciona VirtualBox o VMware; se usó Multipass sobre Hyper-V porque ya estaba instalado y funcionando en el equipo.
@@ -33,7 +35,9 @@ sudo apt install -y curl net-tools dnsutils ufw
 ```
 
 Verificación: `hostnamectl`, `timedatectl`, `hostname -I`.
-Captura: `capturas/01-servidor-base.png`
+![Captura-creacion-VM-edeq-srv](capturas/Captura-creacion-VM-edeq-srv.png)
+
+![Actualizacion-general-zona-horaria](capturas/Actualizacion-general-zona-horaria.png)
 
 ## 3. Dokploy, dominio y SSL (Semana 2)
 
@@ -46,7 +50,9 @@ sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
 
 Se fija `ADVERTISE_ADDR` para que Docker Swarm use la IP correcta de la VM. Quedan en ejecución `dokploy`, `dokploy-postgres` y `dokploy-traefik`. Panel: `http://172.28.223.201:3000`.
-Capturas: `capturas/02-dokploy-contenedores.png`, `capturas/03-dokploy-dashboard.png`
+![instalacion-dokploy](capturas/instalacion-dokploy.png)
+
+![Correcto-funcionamiento-dokploy](capturas/Correcto-funcionamiento-dokploy.png)
 
 ### 3.2 Dominio local
 
@@ -77,7 +83,13 @@ curl -vk --resolve panel.edeq.local:443:127.0.0.1 https://panel.edeq.local 2>&1 
 ```
 
 Resultado: `subject: CN=*.edeq.local`, `HTTP/2 200`. El navegador muestra "No es seguro" porque el emisor es el propio certificado.
-Capturas: `capturas/04-certificado-dokploy.png`, `capturas/05-panel-https.png`
+![Certificados-creados](capturas/Certificados-creados.png)
+
+![Certificado-en-dokploy](capturas/Certificado-en-dokploy.png)
+
+![Configuracion-webserver-dokploy](capturas/Configuracion-webserver-dokploy.png)
+
+![Funcionamiento-webserver-dokploy](capturas/Funcionamiento-webserver-dokploy.png)
 
 ## 4. NTP (Semana 2)
 
@@ -105,7 +117,9 @@ sudo systemctl restart systemd-timesyncd && timedatectl timesync-status
 ```
 
 Resultado: `Server: 172.28.223.201`, `Stratum: 3`, desfase de 1,6 ms.
-Capturas: `capturas/06-ntp-servidor.png`, `capturas/07-ntp-cliente.png`
+![NTP-sincronizado](capturas/NTP-sincronizado.png)
+
+![NFS-NTP-verificado-VM-cliente](capturas/NFS-NTP-verificado-VM-cliente.png)
 
 ## 5. Web, API y base de datos (Semana 3)
 
@@ -130,7 +144,19 @@ sudo docker exec $(sudo docker ps -q -f name=edeqdb) psql -U edeq -d edeq -c "SE
 ```
 
 Resultado: `{"api":"ok","base_de_datos":"ok",...}` y los reportes enviados desde el formulario aparecen en la tabla.
-Capturas: `capturas/08-dokploy-servicios.png`, `capturas/09-web-https.png`, `capturas/10-reporte-enviado.png`, `capturas/11-bd-reportes.png`
+![BD-postgres-creada-desplegada](capturas/BD-postgres-creada-desplegada.png)
+
+![Configuracion-y-correcto.funcionamiento-api](capturas/Configuracion-y-correcto.funcionamiento-api.png)
+
+![Configuracion-y-correcto.funcionamiento-web](capturas/Configuracion-y-correcto.funcionamiento-web.png)
+
+![web-desplegada](capturas/web-desplegada.png)
+
+![Creacion-reporte-web](capturas/Creacion-reporte-web.png)
+
+![Verificacion-reporte-web-en-VM-BD](capturas/Verificacion-reporte-web-en-VM-BD.png)
+
+![Configuracion-webserver-VM](capturas/Configuracion-webserver-VM.png)
 
 ## 6. NFS (Semana 3)
 
@@ -153,7 +179,7 @@ echo '172.28.223.201:/srv/nfs/empresa /mnt/empresa nfs defaults,_netdev,nofail 0
 ```
 
 Resultado: montaje `nfs4`, el cliente ve `bienvenida.txt` y crea `desde_cliente.txt`. Se dejó `root_squash` (por defecto) en lugar de `no_root_squash` de la guía, porque este último permite que el root de un cliente actúe como root en el servidor; por eso los archivos creados desde el cliente figuran como `nobody:nogroup`.
-Capturas: `capturas/12-nfs-servidor.png`, `capturas/13-nfs-cliente.png`
+![NFS-NTP-verificado-VM-cliente](capturas/NFS-NTP-verificado-VM-cliente.png)
 
 ## 7. NIS (Semana 3)
 
@@ -188,7 +214,11 @@ ypwhich; ypcat passwd; id empleado1; su - empleado1
 ```
 
 Resultado: `ypwhich` → `172.28.223.201`; `id empleado1` resuelve un usuario que no existe localmente; `su - empleado1` autentica y crea `/home/empleado1`. Nota: la guía propone `ypinfo --self`, que no es un comando válido; se usaron `ypwhich` y `ypcat`.
-Capturas: `capturas/14-nis-servidor.png`, `capturas/15-nis-cliente.png`
+![Servidor-NIS-VM-edeq-y-creacion-usuarios](capturas/Servidor-NIS-VM-edeq-y-creacion-usuarios.png)
+
+![servidor-NIS-y-usuarios-correcto](capturas/servidor-NIS-y-usuarios-correcto.png)
+
+![Configuracion-NIS-VM-cliente-log-empleado-1](capturas/Configuracion-NIS-VM-cliente-log-empleado-1.png)
 
 ## 8. CUPS (Semana 3)
 
@@ -204,7 +234,9 @@ ls -l ~/PDF
 ```
 
 Resultado: la cola `PDF` está habilitada y compartida, escucha en el puerto 631, el trabajo `PDF-1` quedó completado y el PDF se generó en `~/PDF` (en Ubuntu 24.04 el destino por defecto es `${HOME}/PDF`). Interfaz web: `https://172.28.223.201:631/printers/`.
-Capturas: `capturas/16-cups-cola.png`, `capturas/17-cups-web.png`
+![instalacion-configuracion-y-prueba-CUPS-VM-edeq](capturas/instalacion-configuracion-y-prueba-CUPS-VM-edeq.png)
+
+![prueba-cola-impresion-e-impresoras](capturas/prueba-cola-impresion-e-impresoras.png)
 
 ## 9. Samba (Semana 3)
 
@@ -229,7 +261,11 @@ dir Z:\
 ```
 
 Resultado: se ve `prueba_samba.txt` y se puede escribir desde Windows.
-Capturas: `capturas/18-samba-testparm.png`, `capturas/19-samba-denegado.png`, `capturas/20-samba-windows.png`
+![Creacion-SAMBA-VM-edeq-y-asignacion-de-empleados-1-2](capturas/Creacion-SAMBA-VM-edeq-y-asignacion-de-empleados-1-2.png)
+
+![Comprobacion-correcto-acceso-SAMBA-empleado-1](capturas/Comprobacion-correcto-acceso-SAMBA-empleado-1.png)
+
+![samba-windows](capturas/samba-windows.png)
 
 ## 10. Extras
 
@@ -248,17 +284,29 @@ sudo ufw --force enable && sudo ufw status numbered
 ```
 
 Se comprobó después que web, API, NIS, NFS, NTP y Samba siguen funcionando. Limitación: Docker publica los puertos 80, 443 y 3000 con sus propias reglas de `iptables`, que no pasan por UFW; para esos tres puertos el filtro por subred no es total.
-Captura: `capturas/21-ufw.png`
+![ufw-status](capturas/ufw-status.png)
 
 ### 10.2 Copia de seguridad automática
 
 `codigo/scripts/backup_edeq.sh` hace `pg_dump` de la base `edeq` a `/srv/backups/edeq/`, comprime y conserva 7 días. Cron diario a las 2:00 a. m. (`/etc/cron.d/edeq-backup`). Prueba de restauración: la copia se cargó en una base temporal `edeq_restore` y devolvió el mismo número de reportes (2).
-Captura: `capturas/22-backup.png`
+![configuracion-de-alertas-y-backups](capturas/configuracion-de-alertas-y-backups.png)
+
+![restauracion-backup](capturas/restauracion-backup.png)
 
 ### 10.3 Monitoreo con alertas
 
 `codigo/scripts/monitor_edeq.sh` corre cada 5 minutos (`/etc/cron.d/edeq-monitor`). Revisa `docker`, `ntpsec`, `nfs-server`, `ypserv`, `smbd`, `cups`, la API con su base de datos y el uso del disco (≥ 85 %). Envía una notificación por ntfy solo cuando cambia el estado. Prueba: al detener CUPS llegó "EDEQ ALERTA — Fallas en edeq-srv: cups" y al iniciarlo "EDEQ OK — Servicios restablecidos".
-Captura: `capturas/23-ntfy-alertas.png`
+![comprobacion-de-alertas](capturas/comprobacion-de-alertas.png)
+
+### 10.4 Repositorio y control de versiones
+
+El proyecto vive en un repositorio Git con la estructura pedida (`analisis.md`, `diagrama.mmd`, `documentacion.md`, `README.md`, `capturas/`, `codigo/`). Dokploy despliega `web` y `api` directamente desde la rama `main`, de modo que un cambio en el código se publica con un nuevo *Deploy*.
+
+![Preparacion-y-commit-repositorio-en-VM](capturas/Preparacion-y-commit-repositorio-en-VM.png)
+
+![Commit-1](capturas/Commit-1.png)
+
+![Repositorio-github](capturas/Repositorio-github.png)
 
 ## 11. Problemas y soluciones
 
@@ -292,7 +340,8 @@ Riesgos y mitigaciones:
 - NIS no cifra el tráfico: se restringe a la red local con UFW y `ypserv.securenets`; en producción se recomendaría LDAP con TLS o Kerberos.
 - Certificado autofirmado: en producción, dominio público y Let's Encrypt.
 
-## 13. Qué falta antes de entregar
+## 13. Pendientes antes de entregar
 
-- Insertar las capturas listadas en `capturas/` con los nombres indicados.
+- Tomar tres capturas que aún faltan y guardarlas en `capturas/`: `ufw-status.png` (salida de `sudo ufw status numbered`), `samba-windows.png` (`dir Z:\` o el Explorador en `\\172.28.223.201\empresa`) y `restauracion-backup.png` (restauración de la copia con `count = 2`).
 - Completar los campos `[COMPLETAR]`.
+- Revisar que ninguna captura muestre tokens, claves privadas ni contraseñas reales.
