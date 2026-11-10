@@ -33,13 +33,15 @@ Decisiones de diseño:
 
 ## 3. Plan de direccionamiento (supuesto)
 
-> **Por confirmar:** la subred real depende de la red de las VM. Los valores de abajo son el plan; se ajustan al terminar de definir el hipervisor.
+> Las IP son las asignadas por el switch de Hyper-V (Multipass) por DHCP. Pueden cambiar si se reinicia el equipo anfitrión; ver riesgos.
 
 | Equipo | Nombre | IP | Rol |
 |---|---|---|---|
-| Servidor | `edeq-srv` | 192.168.100.10 | Dokploy + NTP + NFS + NIS + CUPS + Samba |
-| Cliente Linux | `edeq-cli` | 192.168.100.20 | Pruebas de NTP, NFS, NIS |
+| Servidor | `edeq-srv` | 172.28.223.201 | Dokploy + NTP + NFS + NIS + CUPS + Samba |
+| Cliente Linux | `edeq-cli` | 172.28.208.172 | Pruebas de NTP, NFS, NIS |
 | Cliente Windows | equipo anfitrión | DHCP | Pruebas de Samba, CUPS y web |
+
+Subred de las VM: `172.28.208.0/20`.
 
 Dominio local: `edeq.local` (sitio en `www.edeq.local`, panel en `panel.edeq.local`, API en `api.edeq.local`), resueltos con hosts.
 
@@ -47,17 +49,17 @@ Dominio local: `edeq.local` (sitio en `www.edeq.local`, panel en `panel.edeq.loc
 
 | Servicio | Software | IP | Puerto | Protocolo | Tipo | Acceso |
 |---|---|---|---|---|---|---|
-| Panel Dokploy | Dokploy | 192.168.100.10 | 3000 | TCP | Plataforma | Administradores |
-| Proxy inverso | Traefik | 192.168.100.10 | 80, 443 | TCP | Plataforma | Red local |
-| Web | Nginx (contenedor) | 192.168.100.10 | 443 vía Traefik | HTTPS | Aplicación | Red local |
-| Backend API | Node.js (contenedor) | 192.168.100.10 | 443 vía Traefik | HTTPS | Aplicación | Red local |
+| Panel Dokploy | Dokploy | 172.28.223.201 | 3000 | TCP | Plataforma | Administradores |
+| Proxy inverso | Traefik | 172.28.223.201 | 80, 443 | TCP | Plataforma | Red local |
+| Web | Nginx (contenedor) | 172.28.223.201 | 443 vía Traefik | HTTPS | Aplicación | Red local |
+| Backend API | Node.js (contenedor) | 172.28.223.201 | 443 vía Traefik | HTTPS | Aplicación | Red local |
 | Base de datos | PostgreSQL (Dokploy) | red interna Docker | 5432 | TCP | Datos | Solo la API |
-| NTP | ntpsec (paquete `ntp`) | 192.168.100.10 | 123 | UDP | Infraestructura | Red local |
-| NFS | nfs-kernel-server | 192.168.100.10 | 2049 (y 111 rpcbind) | TCP/UDP | Archivos | Clientes Linux |
-| NIS | ypserv (`nis`) | 192.168.100.10 | 111 + puertos RPC dinámicos | TCP/UDP | Autenticación | Clientes Linux |
-| CUPS | cups | 192.168.100.10 | 631 | TCP (IPP) | Impresión | Red local |
-| Samba | samba | 192.168.100.10 | 139, 445 | TCP | Archivos | Windows/Mac |
-| SSH | OpenSSH | 192.168.100.10 | 22 | TCP | Administración | Administradores |
+| NTP | ntpsec (paquete `ntp`) | 172.28.223.201 | 123 | UDP | Infraestructura | Red local |
+| NFS | nfs-kernel-server | 172.28.223.201 | 2049 (y 111 rpcbind) | TCP/UDP | Archivos | Clientes Linux |
+| NIS | ypserv (`nis`) | 172.28.223.201 | 111 + puertos RPC dinámicos | TCP/UDP | Autenticación | Clientes Linux |
+| CUPS | cups | 172.28.223.201 | 631 | TCP (IPP) | Impresión | Red local |
+| Samba | samba | 172.28.223.201 | 139, 445 | TCP | Archivos | Windows/Mac |
+| SSH | OpenSSH | 172.28.223.201 | 22 | TCP | Administración | Administradores |
 
 Las reglas UFW se derivan de esta tabla: se permite solo lo listado y desde la subred local.
 
@@ -74,7 +76,7 @@ El código fuente está en [`diagrama.mmd`](diagrama.mmd); la imagen renderizada
 
 ```mermaid
 graph LR
-    A["Red local EDEQ"] --> FW["Firewall UFW<br/>192.168.100.10"]
+    A["Red local EDEQ"] --> FW["Firewall UFW<br/>172.28.223.201"]
     FW --> B["Dokploy / Traefik<br/>80/443"]
     FW --> F["Servidor Linux<br/>Ubuntu 24.04"]
     B --> C["Web Server<br/>Nginx"]
@@ -96,5 +98,6 @@ graph LR
 - Servidor único: si cae, caen todos los servicios. Mitigación: backup automático de la base de datos y de los directorios compartidos.
 - NIS no cifra el tráfico; se restringe a la red local.
 - El certificado autofirmado genera advertencia en el navegador; en producción se usaría un dominio público con Let's Encrypt.
+- Las IP dependen del DHCP del switch de Hyper-V y pueden cambiar tras reiniciar Windows; se ajusta el archivo hosts. La guía pide red en modo puente, pero con Multipass/Hyper-V no fue estable en este equipo.
 - Sin impresora física, CUPS se prueba con una impresora virtual (PDF).
 - RAM del equipo anfitrión limitada: las dos VM deben ejecutarse juntas solo durante las pruebas.

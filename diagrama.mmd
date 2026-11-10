@@ -1,13 +1,13 @@
 graph LR
-    subgraph RED["Red local EDEQ - 192.168.100.0/24"]
+    subgraph RED["Red local EDEQ - 172.28.208.0/20"]
         direction LR
         CW["Clientes Windows/Mac<br/>(área comercial y administrativa)"]
-        CL["Cliente Linux edeq-cli<br/>192.168.100.20<br/>(técnicos y operación)"]
+        CL["Cliente Linux edeq-cli<br/>172.28.208.172<br/>(técnicos y operación)"]
     end
 
-    A["Red local EDEQ"] --> FW["Firewall UFW<br/>servidor 192.168.100.10"]
+    A["Red local EDEQ"] --> FW["Firewall UFW<br/>servidor 172.28.223.201"]
 
-    subgraph DK["Dokploy (Docker Swarm) - 192.168.100.10"]
+    subgraph DK["Dokploy (Docker Swarm) - 172.28.223.201"]
         B["Traefik<br/>proxy inverso<br/>80/443"]
         C["Web Server<br/>sitio institucional<br/>(Nginx)"]
         D["Backend API<br/>reporte de fallas y PQR<br/>(Node.js)"]
@@ -15,7 +15,7 @@ graph LR
         DB[("PostgreSQL<br/>puerto 5432<br/>solo red interna")]
     end
 
-    subgraph LX["Servicios Linux tradicionales - 192.168.100.10"]
+    subgraph LX["Servicios Linux tradicionales - 172.28.223.201"]
         F["Servidor Linux<br/>Ubuntu Server 24.04"]
         G["NTP<br/>UDP 123"]
         H["NFS<br/>2049"]

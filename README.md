@@ -1,9 +1,10 @@
 # Proyecto final — Infraestructura TI para EDEQ
 
-Proyecto académico (Universidad del Quindío, Administración de Infraestructura de TI).
+Proyecto académico (Universidad del Quindío, Administración de Infraestructura de TI). Sitio y datos simulados.
 
 - `analisis.md` — análisis, justificación, tabla de requisitos y diagrama
 - `diagrama.mmd` — diagrama de arquitectura (Mermaid)
-- `documentacion.md` — instalación, verificación, problemas y soluciones (Semana 4)
+- `documentacion.md` — instalación, verificación, problemas y soluciones
+- `presentacion.md` — guion de la presentación de 15 minutos
 - `capturas/` — evidencias
-- `codigo/` — configuraciones y aplicación web/API
+- `codigo/` — `web/` (Nginx), `api/` (Node.js + PostgreSQL), `scripts/` (backup y monitoreo)
